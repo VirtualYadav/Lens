@@ -106,6 +106,3 @@ lens-project/
 
 English, Hindi, Spanish, French, German, Portuguese, Italian, Japanese, Chinese, Korean, Arabic, Russian, and more (auto-detected from your question).
 
-## 📜 License
-
-MIT — use, modify, ship.
