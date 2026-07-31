@@ -1,0 +1,25 @@
+date,product,region,units_sold,revenue,category
+2024-01-15,Laptop Pro,North,12,18000,Electronics
+2024-01-22,Office Chair,South,45,6750,Furniture
+2024-02-03,Smartphone X,East,89,89000,Electronics
+2024-02-18,Desk Lamp,West,156,4680,Furniture
+2024-03-05,Wireless Mouse,North,234,7020,Electronics
+2024-03-12,Coffee Maker,South,67,13400,Appliances
+2024-04-08,Monitor 27in,East,34,23800,Electronics
+2024-04-19,Bookshelf,West,18,5400,Furniture
+2024-05-02,Headphones,North,145,14500,Electronics
+2024-05-14,Blender,South,52,6240,Appliances
+2024-06-07,Tablet Mini,East,98,49000,Electronics
+2024-06-25,Sofa Set,West,8,24000,Furniture
+2024-07-10,Smart Watch,North,178,35600,Electronics
+2024-07-23,Toaster,South,89,3560,Appliances
+2024-08-05,Gaming PC,East,15,22500,Electronics
+2024-08-19,Dining Table,West,12,18000,Furniture
+2024-09-02,Keyboard,North,267,10680,Electronics
+2024-09-15,Microwave,South,78,9360,Appliances
+2024-10-08,Camera,East,45,27000,Electronics
+2024-10-21,Bed Frame,West,22,17600,Furniture
+2024-11-04,Speaker,North,134,13400,Electronics
+2024-11-17,Vacuum,South,67,16750,Appliances
+2024-12-01,TV 55in,East,38,57000,Electronics
+2024-12-15,Recliner,West,15,12000,Furniture
