@@ -6,15 +6,12 @@ import { QuickActions } from './components/QuickActions'
 import { RecentFiles } from './components/RecentFiles'
 import { EmptyState } from './components/EmptyState'
 import { Logo } from './components/Logo'
-import {
-  DatasetInfo, QueryResponse, askQuestion
-} from './lib/api'
+import { DatasetInfo, QueryResponse, askQuestion } from './lib/api'
 import { Languages, Github, Trash2 } from 'lucide-react'
 
-export default function App() {
-  const BUILD_VERSION = "v2.1-2026-08-02-debug"
+// BUILD VERSION - change this number to force cache invalidation
+const BUILD_VERSION = "v2.1-debug-" + new Date().toISOString().split('T')[0]
 
-export default function App() {
 interface Message {
   role: 'user' | 'ai' | 'error'
   text?: string
@@ -164,9 +161,11 @@ export default function App() {
           </div>
         </div>
       </header>
-            <div className="bg-emerald-500/20 border-b border-emerald-400/30 py-1.5 px-4 text-center">
+
+      {/* Build version banner */}
+      <div className="bg-emerald-500/20 border-b border-emerald-400/30 py-1.5 px-4 text-center">
         <span className="text-[10px] font-mono text-emerald-200">
-          🔄 Build: {BUILD_VERSION} • {new Date().toISOString().split('T')[0]}
+          🔄 Build: {BUILD_VERSION}
         </span>
       </div>
 
@@ -188,7 +187,6 @@ export default function App() {
           />
 
           {!dataset && <RecentFiles onSelect={() => {
-            // Recent files only work locally — show a helpful message
             alert('Please re-upload the file. Recent list is just a memory of filenames; the actual data needs to be re-uploaded (free hosting is memory-only).')
           }} />}
 
