@@ -42,59 +42,86 @@ def health():
 @app.post("/api/upload")
 async def upload(file: UploadFile = File(...)):
     """Upload a CSV file. Returns dataset info."""
-    if not file.filename:
-        raise HTTPException(400, "No filename provided")
-
-    ext = file.filename.lower().rsplit(".", 1)[-1]
-    if ext != "csv":
-        raise HTTPException(400, f"Only CSV supported in this version. Got: .{ext}")
-
     try:
+        print(f"Upload started: filename={file.filename}, content_type={file.content_type}")
+        
+        if not file.filename:
+            raise HTTPException(400, "No filename provided")
+
+        # Be lenient with file extensions - check content too
+        filename_lower = file.filename.lower()
+        if not (filename_lower.endswith('.csv') or file.content_type == 'text/csv'):
+            raise HTTPException(400, f"Only CSV files supported. Got: {file.filename}")
+
         content = await file.read()
-        text = content.decode("utf-8")
+        print(f"File size: {len(content)} bytes")
+        
+        if len(content) == 0:
+            raise HTTPException(400, "File is empty")
+        
+        # Try multiple decodings
+        text = None
+        for encoding in ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252']:
+            try:
+                text = content.decode(encoding)
+                break
+            except UnicodeDecodeError:
+                continue
+        
+        if text is None:
+            raise HTTPException(400, "Could not decode file. Please use UTF-8 CSV.")
+        
+        print(f"Decoded text length: {len(text)}")
+        
         reader = csv.DictReader(StringIO(text))
         rows = list(reader)
         columns = reader.fieldnames or []
+        
+        print(f"Parsed {len(rows)} rows, {len(columns)} columns: {columns}")
+
+        if not rows:
+            raise HTTPException(400, "CSV file has no data rows")
+
+        dataset_id = str(uuid.uuid4())[:8]
+
+        DATASETS[dataset_id] = {
+            "filename": file.filename,
+            "file_type": "csv",
+            "rows": rows,
+            "columns": columns,
+        }
+
+        return {
+            "dataset_id": dataset_id,
+            "filename": file.filename,
+            "file_type": "csv",
+            "tables": [
+                {
+                    "name": f"data_{dataset_id}",
+                    "original_name": "data",
+                    "rows": len(rows),
+                    "columns": columns,
+                }
+            ],
+            "schema_info": [
+                {
+                    "table": "data",
+                    "table_sql": f"data_{dataset_id}",
+                    "name": col,
+                    "type": _infer_type([row.get(col, "") for row in rows[:100]]),
+                    "samples": list(set(str(row.get(col, "")) for row in rows[:5] if row.get(col)))[:3],
+                }
+                for col in columns
+            ],
+            "primary_table": f"data_{dataset_id}",
+        }
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(400, f"Failed to parse CSV: {str(e)}")
-
-    if not rows:
-        raise HTTPException(400, "CSV file is empty")
-
-    dataset_id = str(uuid.uuid4())[:8]
-
-    DATASETS[dataset_id] = {
-        "filename": file.filename,
-        "file_type": "csv",
-        "rows": rows,
-        "columns": columns,
-    }
-
-    return {
-        "dataset_id": dataset_id,
-        "filename": file.filename,
-        "file_type": "csv",
-        "tables": [
-            {
-                "name": f"data_{dataset_id}",
-                "original_name": "data",
-                "rows": len(rows),
-                "columns": columns,
-            }
-        ],
-        "schema_info": [
-            {
-                "table": "data",
-                "table_sql": f"data_{dataset_id}",
-                "name": col,
-                "type": _infer_type([row.get(col, "") for row in rows[:100]]),
-                "samples": list(set(str(row.get(col, "")) for row in rows[:5] if row.get(col))),
-            }
-            for col in columns
-        ],
-        "primary_table": f"data_{dataset_id}",
-    }
-
+        print(f"Upload error: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"Server error: {type(e).__name__}: {str(e)}")
 
 def _infer_type(values):
     """Simple type inference for a column."""
