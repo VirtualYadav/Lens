@@ -11,6 +11,10 @@ import {
 } from './lib/api'
 import { Languages, Github, Trash2 } from 'lucide-react'
 
+export default function App() {
+  const BUILD_VERSION = "v2.1-2026-08-02-debug"
+
+export default function App() {
 interface Message {
   role: 'user' | 'ai' | 'error'
   text?: string
@@ -160,6 +164,11 @@ export default function App() {
           </div>
         </div>
       </header>
+            <div className="bg-emerald-500/20 border-b border-emerald-400/30 py-1.5 px-4 text-center">
+        <span className="text-[10px] font-mono text-emerald-200">
+          🔄 Build: {BUILD_VERSION} • {new Date().toISOString().split('T')[0]}
+        </span>
+      </div>
 
       {/* Main */}
       <main className="relative z-10 flex-1 overflow-hidden flex flex-col max-w-3xl w-full mx-auto px-4 py-4">
