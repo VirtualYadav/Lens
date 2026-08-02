@@ -1,10 +1,20 @@
 // Lens — API client
+// This file talks to the backend (Python FastAPI on Vercel)
+
 /// <reference types="vite/client" />
+
+// How the frontend finds the backend:
+// 1. In dev (npm run dev) → uses localhost:7377 directly
+// 2. In production → calls /api on the same Vercel domain
+// 3. If VITE_API_URL is set, uses that instead
 
 const DEV_BACKEND = 'http://localhost:7377'
 const PROD_BACKEND = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || ''
 
-const BASE = import.meta.env.DEV ? DEV_BACKEND : (PROD_BACKEND || window.location.origin)
+// In dev, use localhost. In production, use the same origin (Vercel) or env var
+const BASE = import.meta.env.DEV
+  ? DEV_BACKEND
+  : (PROD_BACKEND || '')
 
 export interface TableInfo {
   name: string
@@ -48,10 +58,15 @@ export interface QueryResponse {
   used_table: string
 }
 
+// ─────────────────────────────────────────────
+// API Functions
+// ─────────────────────────────────────────────
+
 export async function uploadFile(file: File): Promise<DatasetInfo> {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`${BASE}/upload`, { method: 'POST', body: form })
+  const url = `${BASE}/api/upload`
+  const res = await fetch(url, { method: 'POST', body: form })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'Upload failed' }))
     throw new Error(err.detail || 'Upload failed')
@@ -63,9 +78,10 @@ export async function askQuestion(
   dataset_id: string,
   question: string,
   table?: string,
-  language: string = 'en',
+  language: string = 'en'
 ): Promise<QueryResponse> {
-  const res = await fetch(`${BASE}/query`, {
+  const url = `${BASE}/api/query`
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dataset_id, question, table, language }),
@@ -78,10 +94,22 @@ export async function askQuestion(
 }
 
 export async function deleteDataset(dataset_id: string) {
-  const res = await fetch(`${BASE}/datasets/${dataset_id}`, { method: 'DELETE' })
+  const url = `${BASE}/api/datasets/${dataset_id}`
+  const res = await fetch(url, { method: 'DELETE' })
   if (!res.ok) throw new Error('Failed to delete')
   return res.json()
 }
+
+export async function listDatasets() {
+  const url = `${BASE}/api/datasets`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed to list datasets')
+  return res.json()
+}
+
+// ─────────────────────────────────────────────
+// Recent Files (browser localStorage)
+// ─────────────────────────────────────────────
 
 const RECENT_KEY = 'lens:recent-datasets'
 
