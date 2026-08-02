@@ -150,7 +150,7 @@ export default function App() {
             </div>
 
             <a
-              href="https://github.com"
+              href="https://github.com/VirtualYadav"
               target="_blank"
               rel="noreferrer"
               className="text-violet-200/60 hover:text-white p-2 rounded-lg hover:bg-white/5"
