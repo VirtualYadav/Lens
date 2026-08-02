@@ -19,7 +19,6 @@
 }
 
 @layer components {
-  /* Glassmorphism panel */
   .glass {
     background: rgba(30, 27, 75, 0.6);
     backdrop-filter: blur(12px);
@@ -27,19 +26,17 @@
     border: 1px solid rgba(139, 92, 246, 0.2);
   }
   .glass-strong {
-    background: rgba(30, 27, 75, 0.8);
+    background: rgba(30, 27, 75, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(139, 92, 246, 0.3);
   }
-  /* Gradient text */
   .text-lens {
     background: linear-gradient(135deg, #a78bfa 0%, #06b6d4 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  /* Scrollbar */
   .lens-scroll::-webkit-scrollbar { width: 5px; }
   .lens-scroll::-webkit-scrollbar-track { background: transparent; }
   .lens-scroll::-webkit-scrollbar-thumb {
@@ -48,7 +45,6 @@
   }
 }
 
-/* Decorative floating orbs in background */
 .orb {
   position: fixed;
   border-radius: 50%;
@@ -56,4 +52,10 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.4;
+}
+
+/* Fix: ensure dropdowns appear above everything */
+.z-top {
+  position: relative;
+  z-index: 50;
 }
